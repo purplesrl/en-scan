@@ -111,6 +111,11 @@ days = parseargs()
 scan = enscan()
 scan.setdays(days)
 
+scan.check("endian/jobsengine",[
+bc.OKGREEN + "[ENT-1205]" + "MAILQUARANTINE-Abort emails processing",
+bc.WARNING + "[NO-FILE] " + "NO-FILE"
+])
+
 scan.check("squid/cache.log",[
 bc.OKGREEN + "[UTM-1244]" + "ACL is used in context without an HTTP response",
 bc.WARNING + "[NO-FILE] " + "NO-FILE"
