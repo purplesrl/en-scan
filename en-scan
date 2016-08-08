@@ -69,7 +69,7 @@ class enscan(object):
             else:
                lines = [line.rstrip('\n') for line in open(file, "r")]
         except:
-            return ["NO-FILE"]
+            return False
         matching = [s for s in lines if any(xs in s for xs in matchers)]
         return matching
 
@@ -113,17 +113,14 @@ scan.setdays(days)
 
 scan.check("endian/jobsengine",[
 bc.OKGREEN + "[ENT-1205]" + "MAILQUARANTINE-Abort emails processing",
-bc.WARNING + "[NO-FILE] " + "NO-FILE"
 ])
 
 scan.check("squid/cache.log",[
 bc.OKGREEN + "[UTM-1244]" + "ACL is used in context without an HTTP response",
-bc.WARNING + "[NO-FILE] " + "NO-FILE"
 ])
 
 scan.check("c-icap/server.log", [
 bc.OKGREEN + "[UTM-1581]" + "ATTENTION!!!!",
-bc.WARNING + "[NO-FILE] " + "NO-FILE"
 ])
 
 scan.check("messages", [
@@ -133,7 +130,6 @@ bc.FAIL    + "[OOM-FRAG]" + "Normal: ",                         # OOM fragmentat
 bc.FAIL    + "[OOM-SWAP]" + "Free swap  =",			# If this is zero, it's out of memory, if it's not zero, it's fragmentation
 bc.OKGREEN + "[ENT-1200]" + "Cannot determine ethernet address for proxy ARP",
 bc.OKGREEN + "[ENT-588] " + "ip_tables: mac match: used from hooks INPUT/OUTPUT, but only valid from PREROUTING/INPUT/FORWARD",
-bc.WARNING + "[NO-FILE] " + "NO-FILE"                           # No log file from that date
 ])
 
 print "\n"
