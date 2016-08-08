@@ -1,11 +1,12 @@
 # en-scan
 
-Use from github:
+Usage: en-scan DAYS
 
-curl -sk https://raw.githubusercontent.com/purplesrl/en-scan/master/en-scan | python /dev/stdin X
+ DAYS number of days in the past you want to scan.
+      You can use 0 to scan just today.
 
-X = number of days
+To Run from remote:
 
-Use 0 for current day scan only.
+ curl -sk https://raw.githubusercontent.com/purplesrl/en-scan/master/en-scan | python /dev/stdin [DAYS]
 
 

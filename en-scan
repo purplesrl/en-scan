@@ -11,7 +11,7 @@ def parseargs():
         print " DAYS number of days in the past you want to scan."
         print "      You can use 0 to scan just today." + "\n"
         print "To Run from remote:\n"
-        print " curl -sk https://raw.githubusercontent.com/purplesrl/en-scan/master/en-scan | python /dev/stdin 3\n"
+        print " curl -sk https://raw.githubusercontent.com/purplesrl/en-scan/master/en-scan | python /dev/stdin [DAYS]\n"
         sys.exit(0)
     days = int(sys.argv[1])
     return days
