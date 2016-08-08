@@ -97,7 +97,7 @@ class enscan(object):
         if self.suppress <= self.maxsuppress:
             out = header + bc.ENDC + match
             print out
-            self.__writelog(out)
+            self.__writelog(out[5:].replace(bc.ENDC, ""))
         return
 
     def __writelog(self, text):
