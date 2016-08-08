@@ -1,0 +1,133 @@
+#!/usr/bin/python
+# Copyright 2016 -  George Tabacar (g.tabacar@purplesrl.com)
+
+import sys
+import gzip
+from datetime import date, timedelta
+
+def parseargs():
+    if len(sys.argv) != 2:
+        print "usage: en-scan DAYS\n"
+        print " DAYS number of days in the past you want to scan."
+        print "      You can use 0 to scan just today." + "\n"
+        sys.exit(0)
+    days = int(sys.argv[1])
+    return days
+
+def any(s):
+        for v in s:
+            if v:
+                return True
+        return False
+
+class bc:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    CURSOR_UP = '\033[F'
+    ERASE_LINE = '\033[K'
+
+class enscan(object):
+    def __init__(self):
+        self.version = "0.3.1"
+        self.log = "/var/log/en-scan.log"
+        self.dates = None
+        self.days = None
+        self.header = None
+        self.maxsuppress = 7
+        print "\n" + bc.OKBLUE + "Endian Scan Version " + bc.OKGREEN + self.version + bc.ENDC
+        print bc.OKBLUE + "Logging to: " + bc.OKGREEN + self.log + "\n\n",
+        self.__writelog("Starting scan session")
+
+    def setdays(self, days):
+        self.days = days
+
+    def getdates(self):
+        base = date.today() - timedelta(days=1)
+	self.dates = [base - timedelta(days=x) for x in range(0, self.days)]
+
+    def getfiles(self, suffix):
+        self.getdates()
+        name = "/var/log/archives/"+ suffix + "-"
+	files = ["/var/log/" + suffix] + [name + s.strftime("%Y%m%d") + ".gz" for s in self.dates]
+        return files
+
+    def findstring(self, file, matchers):
+        self.suppress = 1
+        print bc.OKBLUE + "Scanning ", file, "              ",
+        print(bc.CURSOR_UP + bc.ERASE_LINE)
+        try:
+            if file.find(".gz") > 0:
+               lines = [line.rstrip('\n') for line in gzip.open(file, "r")]
+            else:
+               lines = [line.rstrip('\n') for line in open(file, "r")]
+        except:
+            return ["NO-FILE"]
+        matching = [s for s in lines if any(xs in s for xs in matchers)]
+        return matching
+
+    def parsefiles(self, files, matchers):
+        for file in files:
+            matches = self.findstring(file, [x[15:] for x in matchers])
+            if matches:
+                print "\n",
+                for match in matches:
+                    header = [x for x in matchers if x[15:] in match]
+                    self.__suppressprint(header[0][:15], match)
+                print "\n",
+
+    def check(self, filename, matchers):
+        files = self.getfiles(filename)
+        self.parsefiles(files, matchers)
+        return
+
+    def __suppressprint(self, header, match):
+        if header == self.header:
+            self.suppress += 1
+        else:
+            self.header = header
+            self.suppress = 1
+        if self.suppress <= self.maxsuppress:
+            out = header + bc.ENDC + match
+            print out
+            self.__writelog(out)
+        return
+
+    def __writelog(self, text):
+        f = open(self.log, "a+")
+        f.write(text + "\r\n")
+        f.close()
+        return
+
+days = parseargs()
+
+scan = enscan()
+scan.setdays(days)
+
+scan.check("squid/cache.log",[
+bc.OKGREEN + "[UTM-1244]" + "ACL is used in context without an HTTP response",
+bc.WARNING + "[NO-FILE] " + "NO-FILE"
+])
+
+scan.check("c-icap/server.log", [
+bc.OKGREEN + "[UTM-1581]" + "ATTENTION!!!!",
+bc.WARNING + "[NO-FILE] " + "NO-FILE"
+])
+
+scan.check("messages", [
+bc.WARNING + "[RESTART] " + "(gcc version",                 	# Searching for reboots
+bc.FAIL    + "[OOM]     " + "invoked oom-killer",           	# OOM invocation
+bc.FAIL    + "[OOM-FRAG]" + "Normal: ",                         # OOM fragmentation
+bc.FAIL    + "[OOM-SWAP]" + "Free swap  =",			# If this is zero, it's out of memory, if it's not zero, it's fragmentation
+bc.OKGREEN + "[ENT-1200]" + "Cannot determine ethernet address for proxy ARP",
+bc.OKGREEN + "[ENT-588] " + "ip_tables: mac match: used from hooks INPUT/OUTPUT, but only valid from PREROUTING/INPUT/FORWARD",
+bc.WARNING + "[NO-FILE] " + "NO-FILE"                           # No log file from that date
+])
+
+print "\n"
+
