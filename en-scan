@@ -59,7 +59,7 @@ class enscan(object):
 	files = ["/var/log/" + suffix] + [name + s.strftime("%Y%m%d") + ".gz" for s in self.dates]
         return files
 
-    def findstring(self, file, matchers):
+    def parsefile(self, file, matchers):
         self.suppress = 1
         print bc.OKBLUE + "Scanning ", file, "              ",
         print(bc.CURSOR_UP + bc.ERASE_LINE)
@@ -75,12 +75,12 @@ class enscan(object):
 
     def parsefiles(self, files, matchers):
         for file in files:
-            matches = self.findstring(file, [x[15:] for x in matchers])
+            matches = self.parsefile(file, [x[16:] for x in matchers])
             if matches:
                 print "\n",
                 for match in matches:
-                    header = [x for x in matchers if x[15:] in match]
-                    self.__suppressprint(header[0][:15], match)
+                    header = [x for x in matchers if x[16:] in match]
+                    self.__suppressprint(header[0][:16], match)
                 print "\n",
 
     def check(self, filename, matchers):
@@ -111,26 +111,28 @@ days = parseargs()
 scan = enscan()
 scan.setdays(days)
 
+scan.parsefiles(["/etc/cron.monthly/sarg"],[
+bc.OKGREEN + "[CORE-1628]" + "mtime $SARG_RETENTION"])
+
 scan.check("endian/jobsengine",[
-bc.OKGREEN + "[ENT-1205]" + "MAILQUARANTINE-Abort emails processing",
+bc.OKGREEN + "[ENT-1205] " + "MAILQUARANTINE-Abort emails processing",
 ])
 
 scan.check("squid/cache.log",[
-bc.OKGREEN + "[UTM-1244]" + "ACL is used in context without an HTTP response",
+bc.OKGREEN + "[UTM-1244] " + "ACL is used in context without an HTTP response",
 ])
 
 scan.check("c-icap/server.log", [
-bc.OKGREEN + "[UTM-1581]" + "ATTENTION!!!!",
+bc.OKGREEN + "[UTM-1581] " + "ATTENTION!!!!",
 ])
 
 scan.check("messages", [
-bc.WARNING + "[RESTART] " + "(gcc version",                 	# Searching for reboots
-bc.FAIL    + "[OOM]     " + "invoked oom-killer",           	# OOM invocation
-bc.FAIL    + "[OOM-FRAG]" + "Normal: ",                         # OOM fragmentation
-bc.FAIL    + "[OOM-SWAP]" + "Free swap  =",			# If this is zero, it's out of memory, if it's not zero, it's fragmentation
-bc.OKGREEN + "[ENT-1200]" + "Cannot determine ethernet address for proxy ARP",
-bc.OKGREEN + "[ENT-588] " + "ip_tables: mac match: used from hooks INPUT/OUTPUT, but only valid from PREROUTING/INPUT/FORWARD",
+bc.WARNING + "[RESTART]  " + "(gcc version",                 	# Searching for reboots
+bc.FAIL    + "[OOM]      " + "invoked oom-killer",           	# OOM invocation
+bc.FAIL    + "[OOM-FRAG] " + "Normal: ",                         # OOM fragmentation
+bc.FAIL    + "[OOM-SWAP] " + "Free swap  =",			# If this is zero, it's out of memory, if it's not zero, it's fragmentation
+bc.OKGREEN + "[ENT-1200] " + "Cannot determine ethernet address for proxy ARP",
+bc.OKGREEN + "[ENT-588]  " + "ip_tables: mac match: used from hooks INPUT/OUTPUT, but only valid from PREROUTING/INPUT/FORWARD",
 ])
 
 print "\n"
-
