@@ -112,18 +112,18 @@ scan = enscan()
 scan.setdays(days)
 
 scan.parsefiles(["/etc/cron.monthly/sarg"],[
-bc.OKGREEN + "[CORE-1628]" + "mtime $SARG_RETENTION"])
+bc.WARNING + "[CORE-1628]" + "mtime $SARG_RETENTION"])
 
 scan.check("endian/jobsengine",[
-bc.OKGREEN + "[ENT-1205] " + "MAILQUARANTINE-Abort emails processing",
+bc.WARNING + "[ENT-1205] " + "MAILQUARANTINE-Abort emails processing",
 ])
 
 scan.check("squid/cache.log",[
-bc.OKGREEN + "[UTM-1244] " + "ACL is used in context without an HTTP response",
+bc.WARNING + "[UTM-1244] " + "ACL is used in context without an HTTP response",
 ])
 
 scan.check("c-icap/server.log", [
-bc.OKGREEN + "[UTM-1581] " + "ATTENTION!!!!",
+bc.FAIL    + "[UTM-1581] " + "ATTENTION!!!!",
 ])
 
 scan.check("messages", [
@@ -131,8 +131,8 @@ bc.WARNING + "[RESTART]  " + "(gcc version",                 	# Searching for re
 bc.FAIL    + "[OOM]      " + "invoked oom-killer",           	# OOM invocation
 bc.FAIL    + "[OOM-FRAG] " + "Normal: ",                         # OOM fragmentation
 bc.FAIL    + "[OOM-SWAP] " + "Free swap  =",			# If this is zero, it's out of memory, if it's not zero, it's fragmentation
-bc.OKGREEN + "[ENT-1200] " + "Cannot determine ethernet address for proxy ARP",
-bc.OKGREEN + "[ENT-588]  " + "ip_tables: mac match: used from hooks INPUT/OUTPUT, but only valid from PREROUTING/INPUT/FORWARD",
+bc.FAIL    + "[ENT-1200] " + "Cannot determine ethernet address for proxy ARP",
+bc.WARNING + "[ENT-588]  " + "ip_tables: mac match: used from hooks INPUT/OUTPUT, but only valid from PREROUTING/INPUT/FORWARD",
 ])
 
 print "\n"
