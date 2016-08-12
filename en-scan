@@ -114,6 +114,10 @@ scan.setdays(days)
 scan.parsefiles(["/etc/cron.monthly/sarg"],[
 bc.WARNING + "[CORE-1628]" + "mtime $SARG_RETENTION"])
 
+scan.check("radius/radius.log",[
+bc.FAIL    + "[HOT-618]  " + "insert SQL accounting ALIVE record",
+])
+
 scan.check("endian/jobsengine",[
 bc.WARNING + "[ENT-1205] " + "MAILQUARANTINE-Abort emails processing",
 ])
