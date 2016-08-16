@@ -135,6 +135,7 @@ bc.WARNING + "[RESTART]        " + "(gcc version",                 	# Searching 
 bc.FAIL    + "[OOM]            " + "invoked oom-killer",           	# OOM invocation
 bc.FAIL    + "[OOM-FRAG]       " + "Normal: ",                         # OOM fragmentation
 bc.FAIL    + "[OOM-SWAP]       " + "Free swap  =",			# If this is zero, it's out of memory, if it's not zero, it's fragmentation
+bc.FAIL    + "[HARDWARE ERROR] " + "Machine check events logged",
 bc.FAIL    + "[ENTERPRISE-1200]" + "Cannot determine ethernet address for proxy ARP",
 bc.WARNING + "[ENTERPRISE-588] " + "ip_tables: mac match: used from hooks INPUT/OUTPUT, but only valid from PREROUTING/INPUT/FORWARD",
 ])
